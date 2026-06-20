@@ -1,91 +1,182 @@
-function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var action = e.parameter.action;
-  
-  if (action === "summary") {
-    var lastRow = sheet.getLastRow();
-    // Exclude header row if the sheet has data
-    var count = lastRow > 1 ? lastRow - 1 : 0;
-    
-    // Add offset if you want a baseline number of signups displayed
-    var displayCount = count + 247; // Start count from 247 as baseline
-    
-    return ContentService.createTextOutput(JSON.stringify({
-      "total_leads": displayCount
-    })).setMimeType(ContentService.MimeType.JSON);
+/**
+ * PIA NA SIA 21 — Lead Capture + Live Counter Google Apps Script (Stand-Alone Friendly)
+ * ==============================================================
+ * HOW TO DEPLOY:
+ * 1. Open your Google Sheet, and copy its browser URL.
+ * 2. Paste it in the SPREADSHEET_URL variable below.
+ * 3. Go to script.google.com — create new project, paste this whole file.
+ * 4. Deploy > New Deployment > Web App.
+ * 5. Execute as: Me  |  Who has access: Anyone.
+ * 6. Copy the Web App URL.
+ * 7. In index.html replace SHEET_URL with that URL.
+ */
+
+// 1. paste your Google Sheet link between the quotes below:
+const SPREADSHEET_URL = 'YOUR_SPREADSHEET_URL_HERE'; 
+
+const NOTIFY_EMAIL = 'womantowomannetwork21@gmail.com';
+const SHEET_NAME   = 'Leads';
+const LGA_SHEET    = 'By LGA';
+const SOURCE_SHEET = 'By Source';
+
+const HEADERS = [
+  'Timestamp','Name','Phone','LGA','WhatsApp Group',
+  'Traffic Source','Medium','Campaign','Referrer','Full URL','Row #'
+];
+
+/* Helper to get the correct spreadsheet whether bound or standalone */
+function getActiveSpreadsheet() {
+  if (SPREADSHEET_URL && SPREADSHEET_URL !== 'YOUR_SPREADSHEET_URL_HERE') {
+    return SpreadsheetApp.openByUrl(SPREADSHEET_URL);
   }
-  
-  return ContentService.createTextOutput("Invalid Action");
+  return SpreadsheetApp.getActiveSpreadsheet();
 }
 
+/* ── CORS HEADERS (required for live counter fetch from browser) ── */
+function setCORS(output) {
+  return output
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+/* ── POST: receive a new lead from the landing page ── */
 function doPost(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    
-    // Create headers if the sheet is brand new and empty
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
-        "Timestamp", 
-        "Name", 
-        "Phone Number", 
-        "LGA", 
-        "WhatsApp Group Link", 
-        "Source", 
-        "Medium", 
-        "Campaign", 
-        "Referrer", 
-        "Full URL"
-      ]);
-    }
-    
-    var data = JSON.parse(e.postData.contents);
-    
-    // Append the lead data to the Google Sheet
-    sheet.appendRow([
-      data.timestamp || new Date().toISOString(),
-      data.name,
-      data.phone,
-      data.lga,
-      data.whatsapp_group,
-      data.source,
-      data.medium,
-      data.campaign,
-      data.referrer,
-      data.full_url
+    const data = JSON.parse(e.postData.contents);
+    const ss   = getActiveSpreadsheet();
+    if (!ss) throw new Error("Could not access Google Spreadsheet. Please verify your SPREADSHEET_URL in the script.");
+
+    const leadsSheet = getOrCreateSheet(ss, SHEET_NAME, HEADERS);
+    const rowNum     = leadsSheet.getLastRow();
+
+    leadsSheet.appendRow([
+      data.timestamp      || new Date().toISOString(),
+      data.name           || '',
+      data.phone          || '',
+      data.lga            || '',
+      data.whatsapp_group || '',
+      data.source         || 'direct',
+      data.medium         || '',
+      data.campaign       || '',
+      data.referrer       || '',
+      data.full_url       || '',
+      rowNum
     ]);
-    
-    // Send email notification
-    var emailRecipient = data.notify_email || "womantowomannetwork21@gmail.com";
-    var emailSubject = "🎉 New Signup: " + data.name + " (" + data.lga + ")";
-    
-    var emailBody = 
-      "<h3>New Sister Joined the Network!</h3>" +
-      "<p><strong>Name:</strong> " + data.name + "</p>" +
-      "<p><strong>Phone:</strong> " + data.phone + "</p>" +
-      "<p><strong>LGA:</strong> " + data.lga + "</p>" +
-      "<p><strong>WhatsApp Group:</strong> <a href='" + data.whatsapp_group + "'>" + data.whatsapp_group + "</a></p>" +
-      "<br>" +
-      "<p><strong>Source (UTM):</strong> " + data.source + "</p>" +
-      "<p><strong>Medium:</strong> " + data.medium + "</p>" +
-      "<p><strong>Campaign:</strong> " + data.campaign + "</p>" +
-      "<p><strong>Referrer:</strong> " + data.referrer + "</p>" +
-      "<p><strong>Time:</strong> " + (data.timestamp ? new Date(data.timestamp).toLocaleString() : new Date().toLocaleString()) + "</p>";
-      
-    MailApp.sendEmail({
-      to: emailRecipient,
-      subject: emailSubject,
-      htmlBody: emailBody
-    });
-    
-    return ContentService.createTextOutput(JSON.stringify({
-      "status": "success",
-      "message": "Lead saved and email sent!"
-    })).setMimeType(ContentService.MimeType.JSON);
-    
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      "status": "error",
-      "message": error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+
+    updateSummary(ss, LGA_SHEET,    data.lga    || 'Unknown');
+    updateSummary(ss, SOURCE_SHEET, data.source || 'direct');
+    sendAlert(data, rowNum);
+
+    return setCORS(
+      ContentService
+        .createTextOutput(JSON.stringify({ status: 'ok', row: rowNum }))
+        .setMimeType(ContentService.MimeType.JSON)
+    );
+  } catch (err) {
+    return setCORS(
+      ContentService
+        .createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON)
+    );
   }
+}
+
+/* ── GET: return live summary for the counter on the landing page ── */
+function doGet(e) {
+  try {
+    const action = (e.parameter && e.parameter.action) ? e.parameter.action : '';
+    const ss     = getActiveSpreadsheet();
+    if (!ss) throw new Error("Could not access Google Spreadsheet.");
+
+    const leads  = ss.getSheetByName(SHEET_NAME);
+    const total  = leads ? Math.max(0, leads.getLastRow() - 1) : 0;
+
+    if (action === 'summary') {
+      const byLGA  = ss.getSheetByName(LGA_SHEET);
+      const bySrc  = ss.getSheetByName(SOURCE_SHEET);
+      const lgaData = byLGA ? byLGA.getDataRange().getValues().slice(1) : [];
+      const srcData = bySrc ? bySrc.getDataRange().getValues().slice(1) : [];
+
+      return setCORS(
+        ContentService.createTextOutput(JSON.stringify({
+          total_leads: total,
+          by_lga:    lgaData.map(r => ({ lga: r[0], count: r[1] })),
+          by_source: srcData.map(r => ({ source: r[0], count: r[1] }))
+        })).setMimeType(ContentService.MimeType.JSON)
+      );
+    }
+
+    // default: just the count (lightweight, fast)
+    return setCORS(
+      ContentService
+        .createTextOutput(JSON.stringify({ total_leads: total }))
+        .setMimeType(ContentService.MimeType.JSON)
+    );
+  } catch (err) {
+    return setCORS(
+      ContentService
+        .createTextOutput(JSON.stringify({ total_leads: 0, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON)
+    );
+  }
+}
+
+/* ── EMAIL ALERT ── */
+function sendAlert(data, rowNum) {
+  MailApp.sendEmail({
+    to: NOTIFY_EMAIL,
+    subject: `New Sister Joined: ${data.lga} LGA — Pia Na Sia 21`,
+    body: `
+A new woman has joined the network.
+
+NAME       : ${data.name}
+PHONE      : ${data.phone || 'Not provided'}
+LGA        : ${data.lga}
+SOURCE     : ${data.source || 'direct'}
+CAMPAIGN   : ${data.campaign || 'none'}
+TIME       : ${data.timestamp}
+ROW #      : ${rowNum}
+
+WhatsApp Group : ${data.whatsapp_group}
+
+Mun kasance tare. Mu ci gaba tare.
+Pia Na Sia 21 Digital Team
+    `.trim()
+  });
+}
+
+/* ── SUMMARY SHEET UPSERT ── */
+function updateSummary(ss, sheetName, key) {
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(['Category', 'Count', 'Last Updated']);
+  }
+  const data  = sheet.getDataRange().getValues();
+  let found   = false;
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === key) {
+      sheet.getRange(i + 1, 2).setValue(data[i][1] + 1);
+      sheet.getRange(i + 1, 3).setValue(new Date().toISOString());
+      found = true;
+      break;
+    }
+  }
+  if (!found) sheet.appendRow([key, 1, new Date().toISOString()]);
+}
+
+/* ── CREATE SHEET IF MISSING ── */
+function getOrCreateSheet(ss, name, headers) {
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, headers.length)
+         .setBackground('#0A6B2F')
+         .setFontColor('#ffffff')
+         .setFontWeight('bold');
+  }
+  return sheet;
 }
