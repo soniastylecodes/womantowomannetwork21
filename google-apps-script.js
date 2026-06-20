@@ -23,6 +23,25 @@ const HEADERS = [
 ];
 
 /* 
+ * MANUAL TEST FUNCTION:
+ * Select "testConnection" from the dropdown list at the top and click "Run"
+ * to verify the spreadsheet connection without errors!
+ */
+function testConnection() {
+  var ss = getActiveSpreadsheet();
+  if (ss) {
+    Logger.log("🎉 SUCCESS! Connected to Google Sheet: " + ss.getName());
+    Logger.log("Link to your Google Sheet: " + ss.getUrl());
+    
+    // Test spreadsheet initialization
+    var sheet = getOrCreateSheet(ss, SHEET_NAME, HEADERS);
+    Logger.log("Sheet initialized. You are ready to receive signups!");
+  } else {
+    Logger.log("❌ ERROR: Could not locate or create the Google Sheet.");
+  }
+}
+
+/* 
  * Auto-detect spreadsheet:
  * 1. Works automatically if created inside a spreadsheet (bound)
  * 2. If stand-alone, searches your Google Drive for "Pia na Sia - Project Execution"
