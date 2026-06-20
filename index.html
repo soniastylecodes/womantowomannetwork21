@@ -118,8 +118,9 @@ img{max-width:100%;display:block}
 .pop-body label{display:block;font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:6px}
 .pop-body input,.pop-body select{width:100%;padding:13px 14px;font-family:"Sora",sans-serif;font-size:1rem;border:1.5px solid #e8e5e0;border-radius:10px;background:#fafaf8;color:#111;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none}
 .pop-body input:focus,.pop-body select:focus{border-color:var(--g)}
-.pop-btn{width:100%;padding:15px;margin-top:4px;background:var(--g);color:#fff;font-family:"Sora",sans-serif;font-size:1rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;-webkit-tap-highlight-color:transparent}
-.pop-btn:active{background:#085b28}
+.pop-btn{width:100%;padding:15px;margin-top:4px;background:var(--g);color:#fff;font-family:"Sora",sans-serif;font-size:1rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .3s ease,transform .2s ease,box-shadow 0.3s ease;-webkit-tap-highlight-color:transparent}
+.pop-btn:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(10,107,47,.3)}
+.pop-btn:active{background:#085b28;transform:translateY(0)}
 .pop-skip{text-align:center;margin-top:12px;font-size:.75rem;color:#bbb;cursor:pointer;padding:6px}
 .pop-spinner{width:17px;height:17px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -159,7 +160,8 @@ img{max-width:100%;display:block}
 
 .logo-stage{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 @media(min-width:800px){.logo-stage{width:320px;height:320px}}
-.logo-stage img.main-logo{width:138px;height:138px;border-radius:50%;object-fit:cover;position:relative;z-index:3;border:3px solid rgba(201,168,76,.6);box-shadow:0 0 0 8px rgba(201,168,76,.07),0 0 50px rgba(10,107,47,.5)}
+.logo-stage img.main-logo{width:138px;height:138px;border-radius:50%;object-fit:cover;position:relative;z-index:3;border:5px solid var(--gld);box-shadow:0 0 0 10px rgba(201,168,76,.15),0 0 60px rgba(10,107,47,.6);transition:transform .3s ease}
+.logo-stage img.main-logo:hover{transform:scale(1.05)}
 @media(min-width:800px){.logo-stage img.main-logo{width:230px;height:230px}}
 
 .ring-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2}
@@ -202,10 +204,12 @@ img{max-width:100%;display:block}
 .hero-sub{font-size:clamp(.88rem,2.5vw,1rem);font-weight:300;line-height:1.8;color:var(--dim);margin-bottom:28px;max-width:420px;width:100%}
 
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;justify-content:center;width:100%}
-.btn-primary{display:inline-flex;align-items:center;gap:9px;padding:15px 26px;background:var(--gld);color:#080f09;font-family:"Sora",sans-serif;font-size:.85rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .2s,transform .15s;-webkit-tap-highlight-color:transparent}
-.btn-primary:active{background:#e0c05a;transform:scale(.97)}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 20px;background:transparent;border:1.5px solid rgba(240,237,230,.2);color:var(--off);border-radius:6px;cursor:pointer;font-family:"Sora",sans-serif;font-size:.82rem;font-weight:600;transition:border-color .2s;-webkit-tap-highlight-color:transparent}
-.btn-ghost:active{border-color:rgba(240,237,230,.5)}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;padding:15px 26px;background:var(--gld);color:#080f09;font-family:"Sora",sans-serif;font-size:.85rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .3s ease,transform .2s ease,box-shadow 0.3s ease;-webkit-tap-highlight-color:transparent}
+.btn-primary:hover{background:#d4b55c;transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,.4)}
+.btn-primary:active{background:#e0c05a;transform:translateY(0) scale(.97)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 20px;background:transparent;border:1.5px solid rgba(240,237,230,.2);color:var(--off);border-radius:6px;cursor:pointer;font-family:"Sora",sans-serif;font-size:.82rem;font-weight:600;transition:background .3s ease,border-color .3s ease,transform .2s ease;-webkit-tap-highlight-color:transparent}
+.btn-ghost:hover{background:rgba(240,237,230,.1);border-color:var(--off);transform:translateY(-2px)}
+.btn-ghost:active{border-color:rgba(240,237,230,.5);transform:translateY(0)}
 
 .hero-stats{display:flex;gap:24px;padding-top:28px;border-top:1px solid rgba(240,237,230,.1);justify-content:center;width:100%}
 .hstat-num{font-family:"Playfair Display",serif;font-size:1.9rem;font-weight:900;color:var(--gld);line-height:1}
@@ -318,8 +322,9 @@ img{max-width:100%;display:block}
 .form-row label{display:block;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:6px}
 .form-row input,.form-row select{width:100%;padding:14px 15px;font-family:"Sora",sans-serif;font-size:1rem;border:1.5px solid #e8e5e0;border-radius:8px;background:#fafaf8;color:#111;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none}
 .form-row input:focus,.form-row select:focus{border-color:var(--g)}
-.join-btn{width:100%;padding:16px;margin-top:6px;background:#080f09;color:#fff;font-family:"Sora",sans-serif;font-size:1rem;font-weight:700;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s;-webkit-tap-highlight-color:transparent}
-.join-btn:active{background:#1a2a1d}
+.join-btn{width:100%;padding:16px;margin-top:6px;background:#080f09;color:#fff;font-family:"Sora",sans-serif;font-size:1rem;font-weight:700;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .3s ease,transform .2s ease,box-shadow 0.3s ease;-webkit-tap-highlight-color:transparent}
+.join-btn:hover{background:#152518;transform:translateY(-2px);box-shadow:0 6px 20px rgba(8,15,9,.3)}
+.join-btn:active{background:#1a2a1d;transform:translateY(0)}
 .join-note{font-size:.7rem;color:#bbb;text-align:center;margin-top:10px;line-height:1.6}
 .join-spinner{width:17px;height:17px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
 
@@ -338,9 +343,12 @@ img{max-width:100%;display:block}
 .goodwill .sec-h{text-align:center;margin-bottom:40px}
 .goodwill-card{max-width:600px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:40px 28px}
 @media(min-width:600px){.goodwill-card{padding:48px 44px}}
-.pia-av{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--g),#0d4d23);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid var(--gld);box-shadow:0 8px 40px rgba(10,107,47,.3)}
-.pia-quote{font-family:"Playfair Display",serif;font-size:1.05rem;font-weight:700;font-style:italic;color:var(--off);line-height:1.8}
-.pia-sig{margin-top:18px;font-size:.67rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gld)}
+.pia-av{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--g),#0d4d23);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:50px;border:5px solid var(--gld);box-shadow:0 12px 48px rgba(201,168,76,.45),0 0 0 8px rgba(201,168,76,.15);transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.pia-av:hover{transform:scale(1.08) rotate(2deg)}
+.pia-quote{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;font-style:italic;color:var(--off);line-height:1.8;margin-bottom:12px}
+.pia-sig{margin-top:18px;font-size:.8rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--gld)}
+.pia-bold{font-weight:900 !important;font-style:normal;color:var(--gld);text-shadow:0 0 15px rgba(201,168,76,.3)}
+.goodwill-btn{margin-top:24px}
 
 /* ═══════════════════════════════
    REAL-TIME PULSE (live feel)
@@ -3817,7 +3825,7 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
     </h1>
     <p class="hero-sub">Pia Na Sia is 21 LGAs, one voice, and one movement that puts the women of Adamawa at the centre of change.</p>
     <div class="hero-cta">
-      <button class="btn-primary" onclick="openPopup()">
+      <button class="btn-primary" onclick="openPopup(); clearTimeout(popTimer);">
         Join Your LGA Group
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -3871,6 +3879,23 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
           loading="lazy">
         </iframe>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOODWILL -->
+<section class="goodwill" id="goodwillSection">
+  <div style="max-width:860px;margin:0 auto">
+    <span class="sec-label">From Her Heart</span>
+    <h2 class="sec-h" style="color:var(--off)">A word from <em class="pia-bold">Pia</em></h2>
+    <div class="goodwill-card">
+      <div class="pia-av"><img src="pia.jpg" alt="Dr. Patience Ishaku Abbo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"></div>
+      <p class="pia-quote">"Adamawa women have always carried more than their share. They wake early, sleep late, and love their families without asking for credit. This network is my way of saying: I see you. I stand with you. And together, we will build an Adamawa that stands with you too."</p>
+      <p class="pia-sig">Dr. Patience Ishaku Abbo</p>
+      <button class="btn-primary goodwill-btn" onclick="openPopup(); clearTimeout(popTimer);">
+        Join the Sisterhood
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="margin-left: 6px;"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -4003,18 +4028,7 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
   </div>
 </section>
 
-<!-- GOODWILL -->
-<section class="goodwill">
-  <div style="max-width:860px;margin:0 auto">
-    <span class="sec-label">From Her Heart</span>
-    <h2 class="sec-h" style="color:var(--off)">A word from <em>Pia</em></h2>
-    <div class="goodwill-card">
-      <div class="pia-av"><img src="pia.jpg" alt="Dr. Patience Ishaku Abbo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"></div>
-      <p class="pia-quote">"Adamawa women have always carried more than their share. They wake early, sleep late, and love their families without asking for credit. This network is my way of saying: I see you. I stand with you. And together, we will build an Adamawa that stands with you too."</p>
-      <p class="pia-sig">Dr. Patience Ishaku Abbo</p>
-    </div>
-  </div>
-</section>
+
 
 <script>
 const LGA_LINKS={
