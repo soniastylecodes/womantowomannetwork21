@@ -4138,11 +4138,6 @@ function flashCounter() {
 
 // Poll the Apps Script for live count
 async function fetchLiveCount() {
-  if (SHEET_URL === "https://script.google.com/macros/s/AKfycbzJwW6ysYJNisoUBGPvSYdnOI4RFVmKAz-FZAlZdckLyeJ2HmBnVqNe6CT28QgOqtsu/exec") {
-    // Fallback demo animation while sheet not connected
-    if (displayedCount === 0) animateCountTo(247);
-    return;
-  }
   try {
     const res = await fetch(SHEET_URL + "?action=summary", { mode: "cors" });
     const data = await res.json();
@@ -4234,7 +4229,6 @@ function getSource(){
 
 /* ── SEND TO SHEET ── */
 function sendToSheet(d){
-  if(SHEET_URL==="https://script.google.com/macros/s/AKfycbzJwW6ysYJNisoUBGPvSYdnOI4RFVmKAz-FZAlZdckLyeJ2HmBnVqNe6CT28QgOqtsu/exec")return;
   fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)}).catch(()=>{});
 }
 
