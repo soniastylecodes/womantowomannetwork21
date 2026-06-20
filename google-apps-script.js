@@ -79,12 +79,9 @@ function getActiveSpreadsheet() {
   return null;
 }
 
-/* ── CORS HEADERS (required for live counter fetch from browser) ── */
+/* ── CORS HEADERS (Google Apps Script handles CORS redirects automatically, so we just return the output) ── */
 function setCORS(output) {
-  return output
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  return output;
 }
 
 /* ── POST: receive a new lead from the landing page ── */
