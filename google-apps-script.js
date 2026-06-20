@@ -1,18 +1,16 @@
 /**
- * PIA NA SIA 21 — Lead Capture + Live Counter Google Apps Script (Stand-Alone Friendly)
+ * PIA NA SIA 21 — Lead Capture + Live Counter Google Apps Script (Zero-Configuration Edition)
  * ==============================================================
  * HOW TO DEPLOY:
- * 1. Open your Google Sheet, and copy its browser URL.
- * 2. Paste it in the SPREADSHEET_URL variable below.
- * 3. Go to script.google.com — create new project, paste this whole file.
+ * 1. Go to script.google.com — create a new project.
+ * 2. Delete any existing code and paste this entire script.
+ * 3. Click the Save icon (floppy disk).
  * 4. Deploy > New Deployment > Web App.
- * 5. Execute as: Me  |  Who has access: Anyone.
- * 6. Copy the Web App URL.
- * 7. In index.html replace SHEET_URL with that URL.
+ *    - Execute as: Me
+ *    - Who has access: Anyone
+ * 5. Click Deploy. Authorize the permissions when prompted.
+ * 6. Copy the Web App URL (ends with /exec).
  */
-
-// 1. paste your Google Sheet link between the quotes below:
-const SPREADSHEET_URL = 'YOUR_SPREADSHEET_URL_HERE'; 
 
 const NOTIFY_EMAIL = 'womantowomannetwork21@gmail.com';
 const SHEET_NAME   = 'Leads';
@@ -24,12 +22,42 @@ const HEADERS = [
   'Traffic Source','Medium','Campaign','Referrer','Full URL','Row #'
 ];
 
-/* Helper to get the correct spreadsheet whether bound or standalone */
+/* 
+ * Auto-detect spreadsheet:
+ * 1. Works automatically if created inside a spreadsheet (bound)
+ * 2. If stand-alone, searches your Google Drive for "Pia na Sia - Project Execution"
+ * 3. If still not found, automatically creates a new Google Sheet named "Pia na Sia - Project Execution" in your Drive!
+ */
 function getActiveSpreadsheet() {
-  if (SPREADSHEET_URL && SPREADSHEET_URL !== 'YOUR_SPREADSHEET_URL_HERE') {
-    return SpreadsheetApp.openByUrl(SPREADSHEET_URL);
-  }
-  return SpreadsheetApp.getActiveSpreadsheet();
+  try {
+    // 1. Try to get active spreadsheet (if bound)
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (ss && ss.getUrl()) return ss;
+  } catch (err) {}
+  
+  try {
+    // 2. Search for the sheet by name in Google Drive
+    var files = DriveApp.getFilesByName("Pia na Sia - Project Execution");
+    if (files.hasNext()) {
+      return SpreadsheetApp.open(files.next());
+    }
+  } catch (err) {}
+  
+  try {
+    // 3. Fallback search for any sheet containing "Pia na Sia"
+    var filesFallback = DriveApp.searchFiles("mimeType = 'application/vnd.google-apps.spreadsheet' and name contains 'Pia na Sia'");
+    if (filesFallback.hasNext()) {
+      return SpreadsheetApp.open(filesFallback.next());
+    }
+  } catch (err) {}
+  
+  try {
+    // 4. If no sheet exists anywhere, create a brand new one!
+    var newSS = SpreadsheetApp.create("Pia na Sia - Project Execution");
+    return newSS;
+  } catch (err) {}
+  
+  return null;
 }
 
 /* ── CORS HEADERS (required for live counter fetch from browser) ── */
@@ -45,7 +73,7 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     const ss   = getActiveSpreadsheet();
-    if (!ss) throw new Error("Could not access Google Spreadsheet. Please verify your SPREADSHEET_URL in the script.");
+    if (!ss) throw new Error("Could not locate or create your Google Spreadsheet named 'Pia na Sia - Project Execution'.");
 
     const leadsSheet = getOrCreateSheet(ss, SHEET_NAME, HEADERS);
     const rowNum     = leadsSheet.getLastRow();
@@ -87,7 +115,7 @@ function doGet(e) {
   try {
     const action = (e.parameter && e.parameter.action) ? e.parameter.action : '';
     const ss     = getActiveSpreadsheet();
-    if (!ss) throw new Error("Could not access Google Spreadsheet.");
+    if (!ss) throw new Error("Could not locate your Google Spreadsheet.");
 
     const leads  = ss.getSheetByName(SHEET_NAME);
     const total  = leads ? Math.max(0, leads.getLastRow() - 1) : 0;
