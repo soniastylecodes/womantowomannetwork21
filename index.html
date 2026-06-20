@@ -90,7 +90,7 @@ img{max-width:100%;display:block}
 
 /* countdown ring */
 .pop-timer-bar{height:3px;background:var(--gld);width:100%;transform-origin:left;animation:none}
-.pop-timer-bar.counting{animation:shrink 5s linear forwards}
+.pop-timer-bar.counting{animation:shrink 2s linear forwards}
 @keyframes shrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 
 .pop-head{
@@ -4009,7 +4009,7 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
     <span class="sec-label">From Her Heart</span>
     <h2 class="sec-h" style="color:var(--off)">A word from <em>Pia</em></h2>
     <div class="goodwill-card">
-      <div class="pia-av">&#127802;</div>
+      <div class="pia-av"><img src="pia.jpg" alt="Dr. Patience Ishaku Abbo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"></div>
       <p class="pia-quote">"Adamawa women have always carried more than their share. They wake early, sleep late, and love their families without asking for credit. This network is my way of saying: I see you. I stand with you. And together, we will build an Adamawa that stands with you too."</p>
       <p class="pia-sig">Dr. Patience Ishaku Abbo</p>
     </div>
@@ -4170,7 +4170,7 @@ function openPopup(){
   bd.classList.add("visible");
   if(!popShown){
     popShown=true;
-    // start 5s countdown bar
+    // start 2s countdown bar
     const bar=document.getElementById("popTimerBar");
     bar.classList.add("counting");
     popTimer=setTimeout(()=>{
@@ -4179,7 +4179,7 @@ function openPopup(){
          document.activeElement.id!=="popLGA"){
         closePopup();
       }
-    },5000);
+    },2000);
   }
 }
 function closePopup(){
