@@ -2075,16 +2075,16 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
     <div class="pop-body">
       <div id="popFormWrap">
         <div class="fg">
-          <label for="popName">Your full name</label>
-          <input type="text" id="popName" placeholder="Enter your name" autocomplete="name" inputmode="text">
+          <label for="popName">Your full name <span style="color:#d9534f">*</span></label>
+          <input type="text" id="popName" placeholder="Enter your name" autocomplete="name" inputmode="text" required>
         </div>
         <div class="fg">
-          <label for="popPhone">Phone number</label>
-          <input type="tel" id="popPhone" placeholder="08012345678" autocomplete="tel" inputmode="tel">
+          <label for="popPhone">Phone number <span style="color:#d9534f">*</span></label>
+          <input type="tel" id="popPhone" placeholder="08012345678" autocomplete="tel" inputmode="tel" required>
         </div>
         <div class="fg">
-          <label for="popLGA">Your Local Government Area</label>
-          <select id="popLGA">
+          <label for="popLGA">Your Local Government Area <span style="color:#d9534f">*</span></label>
+          <select id="popLGA" required>
             <option value="">Choose your LGA</option>
             <option value="demsa">Demsa</option>
             <option value="fufore">Fufore</option>
@@ -2110,8 +2110,8 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
           </select>
         </div>
         <div class="fg" id="popWardWrap" style="display:none">
-          <label for="popWard">Your Ward</label>
-          <select id="popWard"><option value="">Select your ward</option></select>
+          <label for="popWard">Your Ward <span style="color:#d9534f">*</span></label>
+          <select id="popWard" required><option value="">Select your ward</option></select>
         </div>
         <button class="pop-btn" onclick="handleJoin('pop')">
           <span id="popBtnTxt">Join the Network</span>
@@ -3982,16 +3982,16 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
       <div id="joinFormContent">
         <h3>Select your LGA to join</h3>
         <div class="form-row">
-          <label for="joinName">Your full name</label>
-          <input type="text" id="joinName" placeholder="Enter your name" autocomplete="name" inputmode="text">
+          <label for="joinName">Your full name <span style="color:#d9534f">*</span></label>
+          <input type="text" id="joinName" placeholder="Enter your name" autocomplete="name" inputmode="text" required>
         </div>
         <div class="form-row">
-          <label for="joinPhone">Phone number</label>
-          <input type="tel" id="joinPhone" placeholder="08012345678" autocomplete="tel" inputmode="tel">
+          <label for="joinPhone">Phone number <span style="color:#d9534f">*</span></label>
+          <input type="tel" id="joinPhone" placeholder="08012345678" autocomplete="tel" inputmode="tel" required>
         </div>
         <div class="form-row">
-          <label for="joinLGA">Your Local Government Area</label>
-          <select id="joinLGA">
+          <label for="joinLGA">Your Local Government Area <span style="color:#d9534f">*</span></label>
+          <select id="joinLGA" required>
             <option value="">Choose your LGA</option>
             <option value="demsa">Demsa</option>
             <option value="fufore">Fufore</option>
@@ -4017,8 +4017,8 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
           </select>
         </div>
         <div class="form-row" id="joinWardWrap" style="display:none">
-          <label for="joinWard">Your Ward</label>
-          <select id="joinWard"><option value="">Select your ward</option></select>
+          <label for="joinWard">Your Ward <span style="color:#d9534f">*</span></label>
+          <select id="joinWard" required><option value="">Select your ward</option></select>
         </div>
         <button class="join-btn" onclick="handleJoin('main')">
           <span id="joinBtnTxt">Join My LGA Group</span>
@@ -4304,21 +4304,43 @@ document.getElementById('joinLGA').addEventListener('change',function(){populate
 /* ── JOIN HANDLER ── */
 function handleJoin(src){
   const isPop=src==="pop";
-  const name=(isPop?document.getElementById("popName"):document.getElementById("joinName")).value.trim();
-  const phone=(isPop?document.getElementById("popPhone"):document.getElementById("joinPhone")).value.trim();
-  const lga=(isPop?document.getElementById("popLGA"):document.getElementById("joinLGA")).value;
-  const ward=(isPop?document.getElementById("popWard"):document.getElementById("joinWard")).value;
-  if(!name){alert("Please enter your name, sister.");return;}
-  if(!lga){alert("Please select your LGA.");return;}
+  const nameEl=isPop?document.getElementById("popName"):document.getElementById("joinName");
+  const phoneEl=isPop?document.getElementById("popPhone"):document.getElementById("joinPhone");
+  const lgaEl=isPop?document.getElementById("popLGA"):document.getElementById("joinLGA");
+  const wardEl=isPop?document.getElementById("popWard"):document.getElementById("joinWard");
+
+  const name=nameEl.value.trim();
+  const phone=phoneEl.value.trim();
+  const lga=lgaEl.value;
+  const ward=wardEl.value;
+
+  // Strict Validation: ALL 4 FIELDS ARE REQUIRED!
+  if(!name){alert("Please enter your full name, sister."); nameEl.focus(); return;}
+  if(!phone){alert("Please enter your phone number, sister."); phoneEl.focus(); return;}
+  if(!lga){alert("Please select your Local Government Area (LGA)."); lgaEl.focus(); return;}
+  if(!ward){alert("Please select your Ward."); wardEl.focus(); return;}
+
   const link=LGA_LINKS[lga],lgaName=LGA_NAMES[lga],s=getSource();
-  const lead={name,phone:phone||"Not provided",lga:lgaName,lga_key:lga,ward:ward||'',whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
+  if(!link){alert("WhatsApp group link for this LGA is not available."); return;}
+
+  const lead={name,phone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
   sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
-  if(isPop){document.getElementById("popBtnTxt").textContent="Opening...";document.getElementById("popSpinner").style.display="block";}
-  else{document.getElementById("joinBtnTxt").textContent="Opening...";document.getElementById("joinBtnArrow").style.display="none";document.getElementById("joinSpinner").style.display="block";}
+
+  if(isPop){
+    document.getElementById("popBtnTxt").textContent="Opening WhatsApp...";
+    document.getElementById("popSpinner").style.display="block";
+  }else{
+    document.getElementById("joinBtnTxt").textContent="Opening WhatsApp...";
+    document.getElementById("joinBtnArrow").style.display="none";
+    document.getElementById("joinSpinner").style.display="block";
+  }
+
   const ov=document.getElementById("rdOverlay");
   document.getElementById("rdLGA").textContent=lgaName+" LGA Group";
   ov.classList.add("on");
-  setTimeout(()=>{document.getElementById("rdBar").style.width="100%";},60);
+  setTimeout(()=>{document.getElementById("rdBar").style.width="100%";},30);
+
+  // Force redirect immediately after brief visual indicator (600ms) to ensure mobile browser allows navigation
   setTimeout(()=>{
     if(!isPop){
       document.getElementById("joinFormContent").style.display="none";
@@ -4327,8 +4349,10 @@ function handleJoin(src){
       document.getElementById("joinSuccessLGA").textContent=lgaName;
     }
     ov.classList.remove("on");
+    // Force direct location redirection to WhatsApp
+    window.location.assign(link);
     window.location.href=link;
-  },2800);
+  },600);
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
