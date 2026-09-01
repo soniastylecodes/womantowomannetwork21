@@ -4358,36 +4358,21 @@ function handleJoin(src){
   const link=LGA_LINKS[lga],lgaName=LGA_NAMES[lga],s=getSource();
   if(!link){alert("WhatsApp group link for this LGA is not available."); return;}
 
-  const lead={name,phone:formattedPhone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
+  // Send lead asynchronously to Google Sheet
+  sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
 
-  // Set direct button links for instant native app launch
-  const rdBtn=document.getElementById("rdWaDirectBtn");
-  if(rdBtn) rdBtn.href=link;
-  const succBtn=document.getElementById("joinSuccessWaBtn");
-  if(succBtn) succBtn.href=link;
-
-  if(isPop){
-    closePopup();
+  // Extract WhatsApp native URI scheme (whatsapp://chat?code=...) to bypass browser lag/hanging inside WhatsApp messenger
+  let waCode = '';
+  if (link.includes('chat.whatsapp.com/')) {
+    waCode = link.split('chat.whatsapp.com/')[1].split('?')[0];
   }
-  
-  // Show success screen with direct WhatsApp button
-  document.getElementById("joinFormContent").style.display="none";
-  const ss=document.getElementById("joinSuccess");
-  if(ss){
-    ss.style.display="block";
-    document.getElementById("joinSuccessName").textContent="Welcome, Sister "+name.split(" ")[0]+"!";
-    document.getElementById("joinSuccessLGA").textContent=lgaName;
-    // Scroll to success screen smoothly
-    ss.scrollIntoView({behavior:'smooth', block:'center'});
-  }
+  const nativeWaLink = waCode ? ("whatsapp://chat?code=" + waCode) : link;
 
-  // Attempt instant native app launch
-  try {
-    const w = window.open(link, '_blank');
-    if (!w) window.location.href = link;
-  } catch(e) {
+  // ZERO DELAY, NO SUCCESS PAGE — INSTANT DIRECT PUSH TO WHATSAPP NATIVE APP (<0.1 sec)
+  window.location.href = nativeWaLink;
+  setTimeout(function(){
     window.location.href = link;
-  }
+  }, 300);
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
