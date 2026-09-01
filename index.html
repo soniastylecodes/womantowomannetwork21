@@ -4307,6 +4307,26 @@ function populateWards(lgaKey, prefix){
 document.getElementById('popLGA').addEventListener('change',function(){populateWards(this.value,'pop');});
 document.getElementById('joinLGA').addEventListener('change',function(){populateWards(this.value,'join');});
 
+/* ── PHONE VALIDATOR & FORMATTER ── */
+function formatAndValidateNigerianPhone(rawPhone) {
+  if (!rawPhone) return null;
+  let cleaned = rawPhone.replace(/[\s\-\(\)]/g, '');
+  if (cleaned.startsWith('+234')) {
+    let digitsOnly = cleaned.substring(1);
+    if (digitsOnly.length === 13 && /^234\d{10}$/.test(digitsOnly)) return '+' + digitsOnly;
+  }
+  if (cleaned.startsWith('234')) {
+    if (cleaned.length === 13 && /^\d{13}$/.test(cleaned)) return '+' + cleaned;
+  }
+  if (cleaned.startsWith('0')) {
+    if (cleaned.length === 11 && /^\d{11}$/.test(cleaned)) return '+234' + cleaned.substring(1);
+  }
+  if (cleaned.length === 10 && /^[789]\d{9}$/.test(cleaned)) {
+    return '+234' + cleaned;
+  }
+  return null;
+}
+
 /* ── JOIN HANDLER ── */
 function handleJoin(src){
   const isPop=src==="pop";
@@ -4316,53 +4336,35 @@ function handleJoin(src){
   const wardEl=isPop?document.getElementById("popWard"):document.getElementById("joinWard");
 
   const name=nameEl.value.trim();
-  const phone=phoneEl.value.trim();
+  const rawPhone=phoneEl.value.trim();
   const lga=lgaEl.value;
   const ward=wardEl.value;
 
   // Strict Validation: ALL 4 FIELDS ARE REQUIRED!
   if(!name){alert("Please enter your full name, sister."); nameEl.focus(); return;}
-  if(!phone){alert("Please enter your phone number, sister."); phoneEl.focus(); return;}
+  if(!rawPhone){alert("Please enter your phone number, sister."); phoneEl.focus(); return;}
+  
+  // Phone Format & Completeness Check
+  const formattedPhone = formatAndValidateNigerianPhone(rawPhone);
+  if(!formattedPhone){
+    alert("Please enter a valid, complete Nigerian phone number (e.g. 08012345678 or +2348012345678).");
+    phoneEl.focus();
+    return;
+  }
+
   if(!lga){alert("Please select your Local Government Area (LGA)."); lgaEl.focus(); return;}
   if(!ward){alert("Please select your Ward."); wardEl.focus(); return;}
 
   const link=LGA_LINKS[lga],lgaName=LGA_NAMES[lga],s=getSource();
   if(!link){alert("WhatsApp group link for this LGA is not available."); return;}
 
-  const lead={name,phone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
+  const lead={name,phone:formattedPhone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
+
+  // 1. Save data asynchronously in background
   sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
 
-  // Set direct button links for manual click backup
-  const rdBtn=document.getElementById("rdWaDirectBtn");
-  if(rdBtn) rdBtn.href=link;
-  const succBtn=document.getElementById("joinSuccessWaBtn");
-  if(succBtn) succBtn.href=link;
-
-  if(isPop){
-    document.getElementById("popBtnTxt").textContent="Opening WhatsApp...";
-    document.getElementById("popSpinner").style.display="block";
-  }else{
-    document.getElementById("joinBtnTxt").textContent="Opening WhatsApp...";
-    document.getElementById("joinBtnArrow").style.display="none";
-    document.getElementById("joinSpinner").style.display="block";
-  }
-
-  const ov=document.getElementById("rdOverlay");
-  document.getElementById("rdLGA").textContent=lgaName+" LGA Group";
-  ov.classList.add("on");
-  setTimeout(()=>{document.getElementById("rdBar").style.width="100%";},30);
-
-  // Trigger WhatsApp redirection immediately within user click context
-  setTimeout(()=>{
-    if(!isPop){
-      document.getElementById("joinFormContent").style.display="none";
-      const ss=document.getElementById("joinSuccess");ss.style.display="block";
-      document.getElementById("joinSuccessName").textContent="Welcome, Sister "+name.split(" ")[0]+"!";
-      document.getElementById("joinSuccessLGA").textContent=lgaName;
-    }
-    // Attempt direct location change
-    try { window.location.href = link; } catch(e){}
-  }, 400);
+  // 2. IMMEDIATE REDIRECT TO WHATSAPP (< 1 sec)
+  window.location.href = link;
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
