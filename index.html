@@ -4363,8 +4363,10 @@ function handleJoin(src){
   // 1. Save data asynchronously in background
   sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
 
-  // 2. IMMEDIATE REDIRECT TO WHATSAPP (< 1 sec)
-  window.location.href = link;
+  // 2. Short 150ms delay allows fetch request packet to dispatch cleanly, then redirects to WhatsApp instantly (<0.2s)
+  setTimeout(function(){
+    window.location.href = link;
+  }, 150);
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
