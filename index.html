@@ -4062,7 +4062,7 @@ const LGA_NAMES={
   guyuk:"Guyuk",gombi:"Gombi",girei:"Girei",ganye:"Ganye",
   fufore:"Fufore",demsa:"Demsa"
 };
-const SHEET_URL="https://script.google.com/macros/s/AKfycbxB8Yc5aMtgYE8LDYH9PQd5AYAmLX1hNnxD1OGU2kA/exec";
+const SHEET_URL="https://script.google.com/macros/s/AKfycbyRR8ILjHYnNKPhNzOYoMUikyqTVWr6vPmozUAGSqhooXIL3Q9DtA-VTQSxx09Q7Z-M/exec";
 
 /* ── SOCIAL PROOF DATA ── */
 const NAMES=[
@@ -4243,7 +4243,10 @@ function getSource(){
 
 /* ── SEND TO SHEET ── */
 function sendToSheet(d){
-  fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)}).catch(()=>{});
+  // Use URLSearchParams — works in no-cors mode without a preflight request
+  const params = new URLSearchParams();
+  Object.keys(d).forEach(k => params.append(k, d[k] !== undefined && d[k] !== null ? String(d[k]) : ''));
+  fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:params}).catch(()=>{});
 }
 
 /* ── TRACKING ── */
