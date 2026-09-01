@@ -379,6 +379,9 @@ img{max-width:100%;display:block}
   <h2>Taking you to your sisterhood</h2>
   <p id="rdLGA">Opening your LGA group</p>
   <div class="redir-bar-wrap"><div class="redir-bar" id="rdBar"></div></div>
+  <a id="rdWaDirectBtn" href="#" target="_blank" rel="noopener noreferrer" style="margin-top:24px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;background:#25D366;color:#fff;font-weight:700;border-radius:30px;text-decoration:none;font-size:1rem;box-shadow:0 6px 20px rgba(37,211,102,.5);transition:transform .2s;">
+    <span>👉 Click Here to Join WhatsApp Group</span>
+  </a>
 </div>
 
 <!-- LIVE PULSE TOAST -->
@@ -4031,6 +4034,9 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
         <div class="chk">&#10003;</div>
         <h4 id="joinSuccessName">Welcome, Sister!</h4>
         <p>You are joining the <strong id="joinSuccessLGA"></strong> group. Your voice matters.</p>
+        <a id="joinSuccessWaBtn" href="#" target="_blank" rel="noopener noreferrer" style="margin-top:20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;background:#25D366;color:#fff;font-weight:700;border-radius:30px;text-decoration:none;font-size:1rem;box-shadow:0 6px 20px rgba(37,211,102,.4);">
+          <span>👉 Click Here to Join WhatsApp Group</span>
+        </a>
       </div>
     </div>
   </div>
@@ -4326,6 +4332,12 @@ function handleJoin(src){
   const lead={name,phone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
   sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
 
+  // Set direct button links for manual click backup
+  const rdBtn=document.getElementById("rdWaDirectBtn");
+  if(rdBtn) rdBtn.href=link;
+  const succBtn=document.getElementById("joinSuccessWaBtn");
+  if(succBtn) succBtn.href=link;
+
   if(isPop){
     document.getElementById("popBtnTxt").textContent="Opening WhatsApp...";
     document.getElementById("popSpinner").style.display="block";
@@ -4340,7 +4352,7 @@ function handleJoin(src){
   ov.classList.add("on");
   setTimeout(()=>{document.getElementById("rdBar").style.width="100%";},30);
 
-  // Force redirect immediately after brief visual indicator (600ms) to ensure mobile browser allows navigation
+  // Trigger WhatsApp redirection immediately within user click context
   setTimeout(()=>{
     if(!isPop){
       document.getElementById("joinFormContent").style.display="none";
@@ -4348,11 +4360,9 @@ function handleJoin(src){
       document.getElementById("joinSuccessName").textContent="Welcome, Sister "+name.split(" ")[0]+"!";
       document.getElementById("joinSuccessLGA").textContent=lgaName;
     }
-    ov.classList.remove("on");
-    // Force direct location redirection to WhatsApp
-    window.location.assign(link);
-    window.location.href=link;
-  },600);
+    // Attempt direct location change
+    try { window.location.href = link; } catch(e){}
+  }, 400);
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
