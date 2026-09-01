@@ -4360,13 +4360,34 @@ function handleJoin(src){
 
   const lead={name,phone:formattedPhone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
 
-  // 1. Save data asynchronously in background
-  sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
+  // Set direct button links for instant native app launch
+  const rdBtn=document.getElementById("rdWaDirectBtn");
+  if(rdBtn) rdBtn.href=link;
+  const succBtn=document.getElementById("joinSuccessWaBtn");
+  if(succBtn) succBtn.href=link;
 
-  // 2. Short 150ms delay allows fetch request packet to dispatch cleanly, then redirects to WhatsApp instantly (<0.2s)
-  setTimeout(function(){
+  if(isPop){
+    closePopup();
+  }
+  
+  // Show success screen with direct WhatsApp button
+  document.getElementById("joinFormContent").style.display="none";
+  const ss=document.getElementById("joinSuccess");
+  if(ss){
+    ss.style.display="block";
+    document.getElementById("joinSuccessName").textContent="Welcome, Sister "+name.split(" ")[0]+"!";
+    document.getElementById("joinSuccessLGA").textContent=lgaName;
+    // Scroll to success screen smoothly
+    ss.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  // Attempt instant native app launch
+  try {
+    const w = window.open(link, '_blank');
+    if (!w) window.location.href = link;
+  } catch(e) {
     window.location.href = link;
-  }, 150);
+  }
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
