@@ -4283,7 +4283,9 @@ function sendToSheet(d){
   // Use URLSearchParams — works in no-cors mode without a preflight request
   const params = new URLSearchParams();
   Object.keys(d).forEach(k => params.append(k, d[k] !== undefined && d[k] !== null ? String(d[k]) : ''));
-  fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:params}).catch(()=>{});
+  try {
+    fetch(SHEET_URL, { method: "POST", mode: "no-cors", body: params, keepalive: true }).catch(()=>{});
+  } catch(e) {}
 }
 
 /* ── TRACKING ── */
@@ -4358,21 +4360,14 @@ function handleJoin(src){
   const link=LGA_LINKS[lga],lgaName=LGA_NAMES[lga],s=getSource();
   if(!link){alert("WhatsApp group link for this LGA is not available."); return;}
 
-  // Send lead asynchronously to Google Sheet
+  // Lead Data Object
+  const lead={name,phone:formattedPhone,lga:lgaName,lga_key:lga,ward,whatsapp_group:link,source:s.utm_source,medium:s.utm_medium,campaign:s.utm_campaign,referrer:s.referrer,full_url:s.full_url,timestamp:s.timestamp,notify_email:"womantowomannetwork21@gmail.com"};
+
+  // 1. Send lead asynchronously in background
   sendToSheet(lead);firePixel(lgaName,s.utm_source);fireGAds();fireGA(lgaName,s.utm_source);incrementLocalCount();
 
-  // Extract WhatsApp native URI scheme (whatsapp://chat?code=...) to bypass browser lag/hanging inside WhatsApp messenger
-  let waCode = '';
-  if (link.includes('chat.whatsapp.com/')) {
-    waCode = link.split('chat.whatsapp.com/')[1].split('?')[0];
-  }
-  const nativeWaLink = waCode ? ("whatsapp://chat?code=" + waCode) : link;
-
-  // ZERO DELAY, NO SUCCESS PAGE — INSTANT DIRECT PUSH TO WHATSAPP NATIVE APP (<0.1 sec)
-  window.location.href = nativeWaLink;
-  setTimeout(function(){
-    window.location.href = link;
-  }, 300);
+  // 2. Direct Navigation to WhatsApp Group
+  window.location.href = link;
 }
 
 /* ── SCROLL REVEAL — agenda cards with stagger ── */
