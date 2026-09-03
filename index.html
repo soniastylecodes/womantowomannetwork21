@@ -4179,6 +4179,7 @@ setInterval(()=>{
 
 /* ── LIVE REAL-TIME COUNTER ── */
 const counterEl = document.getElementById("liveCount");
+const BASE_COUNT = 1000;
 let displayedCount = 0;
 let isAnimating = false;
 
@@ -4188,7 +4189,7 @@ function animateCountTo(newTarget) {
   isAnimating = true;
   const start = displayedCount;
   const diff = newTarget - start;
-  const duration = Math.min(1200, diff * 80); // faster for small increments
+  const duration = Math.min(1500, Math.max(600, diff * 1.5)); // smooth count-up animation
   const startTime = performance.now();
   function step(now) {
     const elapsed = now - startTime;
@@ -4196,12 +4197,12 @@ function animateCountTo(newTarget) {
     // ease out cubic
     const eased = 1 - Math.pow(1 - progress, 3);
     displayedCount = Math.round(start + diff * eased);
-    counterEl.textContent = displayedCount;
+    counterEl.textContent = displayedCount.toLocaleString() + "+";
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
       displayedCount = newTarget;
-      counterEl.textContent = newTarget;
+      counterEl.textContent = newTarget.toLocaleString() + "+";
       isAnimating = false;
     }
   }
@@ -4220,14 +4221,14 @@ async function fetchLiveCount() {
   try {
     const res = await fetch(SHEET_URL + "?action=summary", { mode: "cors" });
     const data = await res.json();
-    const total = data.total_leads || 0;
+    const total = BASE_COUNT + (data.total_leads || 0);
     if (total > displayedCount) {
       flashCounter();
       animateCountTo(total);
     }
   } catch(e) {
     // silent fail — keep showing last known count
-    if (displayedCount === 0) animateCountTo(247);
+    if (displayedCount === 0) animateCountTo(BASE_COUNT + 79);
   }
 }
 
