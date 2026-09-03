@@ -251,24 +251,19 @@ img{max-width:100%;display:block}
 .vision-inner .sec-h{color:#080f09}
 .vision-inner .sec-h em{color:var(--r)}
 .vision-txt p{font-size:.95rem;line-height:1.9;color:#444;margin-top:14px}
-/* ── Mission & Vision cards ── */
-.mv-grid{align-items:start !important}
-.mv-cards{display:flex;flex-direction:column;gap:24px}
-.mv-item{display:flex;align-items:flex-start;gap:18px}
-.mv-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;border:4px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+/* ── Mission & Vision 2-Card Grid ── */
+.mv-container{max-width:960px;margin:0 auto}
+.mv-grid{display:grid;grid-template-columns:1fr;gap:28px}
+@media(min-width:740px){.mv-grid{grid-template-columns:1fr 1fr;gap:36px}}
+.mv-card{background:#fff;padding:36px 30px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;gap:18px;transition:transform .3s ease,box-shadow .3s ease}
+.mv-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.09)}
+.mv-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 18px rgba(0,0,0,.12)}
 .mv-icon--green{background:var(--g)}
 .mv-icon--red{background:var(--r)}
-.mv-body p{font-size:.95rem;line-height:1.8;color:#444;margin-top:8px}
-.mv-title{font-family:"Playfair Display",serif;font-size:1.6rem;font-weight:900;line-height:1.1;margin:0}
+.mv-body p{font-size:.98rem;line-height:1.85;color:#444;margin-top:10px}
+.mv-title{font-family:"Playfair Display",serif;font-size:1.75rem;font-weight:900;line-height:1.1;margin:0}
 .mv-title--green{color:var(--g)}
 .mv-title--red{color:var(--r)}
-.mv-founder{display:flex;align-items:center;gap:14px;margin-top:8px;padding:14px 18px;background:rgba(232,17,45,.06);border-radius:8px;border-left:4px solid var(--r)}
-.mv-chevrons{color:var(--r);font-size:1.5rem;font-weight:900;letter-spacing:-4px;line-height:1}
-.mv-founder-text{font-family:"Playfair Display",serif;font-size:.9rem;font-weight:700;font-style:italic;color:#080f09;line-height:1.4}
-.pull-quote{background:var(--ink);border-radius:16px;padding:36px 28px;position:relative;overflow:hidden}
-.pull-quote::before{content:"“";font-family:"Playfair Display",serif;font-size:130px;font-weight:900;line-height:.8;color:rgba(201,168,76,.1);position:absolute;top:-10px;left:10px;pointer-events:none}
-.pull-quote blockquote{font-family:"Playfair Display",serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--off);line-height:1.65;position:relative;z-index:1}
-.pull-quote cite{display:block;margin-top:18px;font-family:"Sora",sans-serif;font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gld);font-style:normal}
 
 /* ═══════════════════════════════
    AGENDA — animated cards
@@ -3926,30 +3921,32 @@ ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAAOtPpg60+gAooooA//Z" alt="Pia N
 
 <!-- MISSION & VISION -->
 <section class="vision">
-  <div class="vision-inner mv-grid">
-    <div class="mv-cards">
-      <div class="mv-item">
-        <div class="mv-icon mv-icon--green">🎯</div>
+  <div class="mv-container">
+    <div class="mv-grid">
+      <div class="mv-card">
+        <div class="mv-icon mv-icon--green">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
         <div class="mv-body">
-          <h2 class="mv-title mv-title--green">Mission:</h2>
+          <h2 class="mv-title mv-title--green">Mission</h2>
           <p>To foster a safe, inclusive network that provides holistic healthcare, mentorship, capacity building, networking and legal advocacy to empower women at every stage of life.</p>
         </div>
       </div>
-      <div class="mv-item">
-        <div class="mv-icon mv-icon--red">💡</div>
+      <div class="mv-card">
+        <div class="mv-icon mv-icon--red">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18h6m-5 3h4M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/>
+          </svg>
+        </div>
         <div class="mv-body">
           <h2 class="mv-title mv-title--red">Vision</h2>
           <p>A society grounded in equity, where all women live free from fear, discrimination, and violence, fully supported in their personal and professional growth.</p>
         </div>
       </div>
-      <div class="mv-founder">
-        <span class="mv-chevrons">❮❮</span>
-        <span class="mv-founder-text"><em>(Dr) Patience Ishaku Abbo</em><br>(Founder, Women 21 Network)</span>
-      </div>
-    </div>
-    <div class="pull-quote">
-      <blockquote>When one woman rises, she carries the whole community with her. That is the only kind of rising that lasts.</blockquote>
-      <cite>Dr. Patience Ishaku Abbo — Founder, Women 21 Network</cite>
     </div>
   </div>
 </section>
